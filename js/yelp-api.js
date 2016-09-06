@@ -56,7 +56,7 @@ function getYelpInformationByLocation(location) {
         var ratingImg = data.businesses[0].rating_img_url;
         var imgUrl = data.businesses[0].image_url;
         var snippetText = data.businesses[0].snippet_text;
-      }).fail(function(jqXHR, textStatus, errorThrown) {
-
+      }).fail(function() {
+        setAPIFailMessage("Unable to connect to Yelp.");
       });
 }

@@ -15,17 +15,15 @@ var infowindow;
 
 
 
-function createGoogleMap() {
+function initGoogleMap() {
   infowindow = new google.maps.InfoWindow({
-  content: contentString});
-
-  google.maps.event.addListener(infowindow,'closeclick',function(){
-  map.setZoom(11);
-  map.setCenter(mapCenter);});
+  content: contentString
+  });
 
   map = new google.maps.Map(document.getElementById('map'), {
   zoom: 11,
-  center: mapCenter});
+  center: mapCenter
+  });
 
   var neighborhood = ['456 High St, Preston VIC 3072',
                           '80 Cochranes Rd, Moorabbin VIC 3189',
@@ -37,8 +35,16 @@ function createGoogleMap() {
                           'Crown Towers Melbourne, Crown Casino, 8 Whiteman St, Southbank VIC 3006'];
 
   for (var i = 0; i < neighborhood.length; i++) {
-    addMarkerToGoogleMap(neighborhood[i]);
+    addMarkerToGoogleMap(neighborhood[i], false);
   }
+}
+
+
+
+function closeInfoWindow(marker) {
+  marker.setAnimation(null);
+  map.setZoom(11);
+  map.setCenter(mapCenter);
 }
 
 
@@ -56,10 +62,12 @@ function createMarkerByGeoCoordinates(latLng) {
   var marker = new google.maps.Marker({
     position: latLng,
     map: map,
-    animation: google.maps.Animation.DROP});
+    animation: google.maps.Animation.DROP
+  });
 
   marker.addListener('click', toggleMarker.bind(null, marker), false);
   markers.push(marker);
+  return marker;
 }
 
 
@@ -72,6 +80,7 @@ function toggleMarker(marker) {
   }
   else {
     marker.setAnimation(google.maps.Animation.BOUNCE);
+    google.maps.event.addListener(infowindow,'closeclick', closeInfoWindow.bind(null, marker), false);
     infowindow.open(map, marker);
     map.setZoom(15);
     map.setCenter(marker.getPosition());
@@ -80,20 +89,51 @@ function toggleMarker(marker) {
 
 
 
-function addMarkerToGoogleMap(address) {
+function addMarkerToGoogleMap(address, isToggle) {
   var url = googleMapsAPIUrl + 'address=' + address + '&key=' + googleMapsAPIKey;
-  var myLatLng;
 
-  $.getJSON(url, function(data){
-    var lat = data.results[0].geometry.location.lat;
-    var lng = data.results[0].geometry.location.lng;
-    myLatLng = {lat: lat, lng: lng};
-
-    if(myLatLng != undefined) {
-      createMarkerByGeoCoordinates(myLatLng);
-    }}
-    ).fail(function(){
-        document.getElementById("map").innerHTML = "FAILED";
-    });
-  return myLatLng;
+  if(!isToggle) {
+    $.getJSON(url)
+      .done(function(data) {
+        processMyJson(data);
+      })
+      .fail(function(){
+         setAPIFailMessage("Unable to connect to Google.");
+     });
+    }
+  else {
+    $.getJSON(url)
+      .done(function(data) {
+        processMyJsonToggle(data);
+      })
+      .fail(function(){
+         setAPIFailMessage("Unable to connect to Google.");
+     });
+    }
 }
+
+
+
+function processMyJson(data){
+  var lat = data.results[0].geometry.location.lat;
+  var lng = data.results[0].geometry.location.lng;
+  myLatLng = {lat: lat, lng: lng};
+
+  if(myLatLng != undefined) {
+    var marker = createMarkerByGeoCoordinates(myLatLng);
+  }
+}
+
+function processMyJsonToggle(data){
+  var lat = data.results[0].geometry.location.lat;
+  var lng = data.results[0].geometry.location.lng;
+  myLatLng = {lat: lat, lng: lng};
+
+  if(myLatLng != undefined) {
+    var marker = createMarkerByGeoCoordinates(myLatLng);
+    marker.animation = null;
+    toggleMarker(marker);
+  }
+}
+
+
