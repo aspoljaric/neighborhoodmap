@@ -7,13 +7,16 @@
     <link rel="stylesheet" href="css/style.css">
     <script src = 'js/lib/jquery-3.1.0.min.js'></script>
     <script type="text/javascript" src="js/lib/bootstrap.min.js"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAbmfw7OfezCJs7qpCOQQZ7IB46SKTQZ14"></script>
+    <script type="text/javascript" src="js/lib/oauth.js"></script>
+    <script type="text/javascript" src="js/lib/sha1.js"></script>
     <title>Map</title>
 </head>
 <body>
     <nav id="drawer" class="dark_blue open">
       <h2>Search</h2>
       <p>LIST</p>
+      <button onclick="clearMarkers()">clear</button>
+      <button onclick="getYelpInformationByLocation('80 Cochranes Rd, Moorabbin VIC 3189')">clear</button>
     </nav>
 
     <main class="light_blue">
@@ -22,47 +25,8 @@
           <path d="M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z"></path>
         </svg>
       </a>
-
-      <div id="map">
-
-      </div>
-
+      <div id="map"></div>
     </main>
-
-
-
-
-
-<script>
-    var myAddress = "56 bridge road richmond";
-    var googleMapsAPIUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=" + myAddress + "&key=AIzaSyAbmfw7OfezCJs7qpCOQQZ7IB46SKTQZ14";
-    $.getJSON(googleMapsAPIUrl, function(data){
-        var lat = data.results[0].geometry.location.lat;
-        var lng = data.results[0].geometry.location.lng;
-        var myLatLng = {lat: lat, lng: lng};
-
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 15,
-          center: myLatLng
-        });
-
-        var marker = new google.maps.Marker({
-          position: myLatLng,
-          map: map,
-          title: 'AMOS!'
-        });
-    }).fail(function(){
-        document.getElementById("map").innerHTML = "FAILED";
-    });
-
-</script>
-
-
-
-
-
-
-
 
     <script>
       /*
@@ -80,7 +44,10 @@
         drawer.classList.remove('open');
       });
     </script>
-    <script src = "js/lib/knockout-3.4.0.js"></script>
-    <script src = "js/app.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAbmfw7OfezCJs7qpCOQQZ7IB46SKTQZ14&callback=createGoogleMap"></script>
+    <script src="js/google-api.js"></script>
+    <script src="js/yelp-api.js"></script>
+    <script src ="js/lib/knockout-3.4.0.js"></script>
+    <script src ="js/app.js"></script>
 </body>
 </html>
