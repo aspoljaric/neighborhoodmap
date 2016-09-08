@@ -7,7 +7,6 @@ var accessToken = '7lZkN-Wjx3XAuV9N2f9EvuQPjzIATCpA';
 var accessTokenSecret = 'zfsg8-Dwu2K6UN1QpyjlSfUdDnI';
 
 
-
 function getYelpInformationByLocation(location) {
 // Please note there is no secure way of doing this via JavaScript as this is all
 // client side. This OAuth implementation can not be used for production (secret keys are
@@ -29,6 +28,7 @@ function getYelpInformationByLocation(location) {
 
       var parameters = [];
       parameters.push(['location', location]);
+      parameters.push(['radius_filter', 20]);
       parameters.push(['callback', 'callback']);
       parameters.push(['oauth_consumer_key', auth.consumerKey]);
       parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
@@ -56,7 +56,15 @@ function getYelpInformationByLocation(location) {
         var ratingImg = data.businesses[0].rating_img_url;
         var imgUrl = data.businesses[0].image_url;
         var snippetText = data.businesses[0].snippet_text;
+        var mobileURL = data.businesses[0].mobile_url;
+        setYelpInformation(businessName, phoneNumber, ratingImg, imgUrl, snippetText, mobileURL);
       }).fail(function() {
         setAPIFailMessage("Unable to connect to Yelp.");
       });
+}
+
+
+
+function setYelpInformation(businessName, phoneNumber, ratingImg, imgUrl, snippetText, mobileURL) {
+  populateInfoWindowContent(businessName, phoneNumber, ratingImg, imgUrl, snippetText, mobileURL);
 }

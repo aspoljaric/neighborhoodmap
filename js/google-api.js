@@ -3,21 +3,12 @@ var googleMapsAPIKey = 'AIzaSyAbmfw7OfezCJs7qpCOQQZ7IB46SKTQZ14';
 var map;
 var markers = [];
 var mapCenter = {lat: -37.8203576, lng: 144.9516255}; // Melbourne, Australia
-var contentString = '<div id="content">'+
-      '<div id="siteNotice">'+
-      '</div>'+
-      '<h1 id="firstHeading" class="firstHeading">Name</h1>'+
-      '<div id="bodyContent">'+
-      'MY TEXT' +
-      '</div>'+
-      '</div>';
 var infowindow;
 
 
 
 function initGoogleMap() {
   infowindow = new google.maps.InfoWindow({
-  content: contentString
   });
 
   map = new google.maps.Map(document.getElementById('map'), {
@@ -30,9 +21,9 @@ function initGoogleMap() {
                           '35 Ebden St, Moorabbin VIC 3189',
                           '87 Kingsway, Glen Waverley VIC 3150',
                           '88 Kingsway, Glen Waverley VIC 3150',
-                          '17-21 Eaton Mall, Oakleigh VIC 3166',
-                          '2/402 Chapel St, South Yarra VIC 3141',
-                          'Crown Towers Melbourne, Crown Casino, 8 Whiteman St, Southbank VIC 3006'];
+                          '25/27 Portman St, Oakleigh VIC 3166',
+                          '402 Chapel St, South Yarra VIC 3141',
+                          '413 Brunswick St, Fitzroy VIC 3065'];
 
   for (var i = 0; i < neighborhood.length; i++) {
     addMarkerToGoogleMap(neighborhood[i], false);
@@ -65,7 +56,7 @@ function createMarkerByGeoCoordinates(latLng) {
     animation: google.maps.Animation.DROP
   });
 
-  marker.addListener('click', toggleMarker.bind(null, marker), false);
+  marker.addListener('click', openInfoWindowByMarker.bind(null, marker), false);
   markers.push(marker);
   return marker;
 }
@@ -92,48 +83,75 @@ function toggleMarker(marker) {
 function addMarkerToGoogleMap(address, isToggle) {
   var url = googleMapsAPIUrl + 'address=' + address + '&key=' + googleMapsAPIKey;
 
-  if(!isToggle) {
-    $.getJSON(url)
-      .done(function(data) {
-        processMyJson(data);
-      })
-      .fail(function(){
+  $.getJSON(url)
+    .done(function(data) {
+        processMarkerData(data, isToggle);
+    })
+    .fail(function(){
          setAPIFailMessage("Unable to connect to Google.");
-     });
-    }
-  else {
-    $.getJSON(url)
-      .done(function(data) {
-        processMyJsonToggle(data);
-      })
-      .fail(function(){
-         setAPIFailMessage("Unable to connect to Google.");
-     });
-    }
+    });
 }
 
 
 
-function processMyJson(data){
+function processMarkerData(data, isToggle){
   var lat = data.results[0].geometry.location.lat;
   var lng = data.results[0].geometry.location.lng;
   myLatLng = {lat: lat, lng: lng};
 
   if(myLatLng != undefined) {
     var marker = createMarkerByGeoCoordinates(myLatLng);
-  }
-}
-
-function processMyJsonToggle(data){
-  var lat = data.results[0].geometry.location.lat;
-  var lng = data.results[0].geometry.location.lng;
-  myLatLng = {lat: lat, lng: lng};
-
-  if(myLatLng != undefined) {
-    var marker = createMarkerByGeoCoordinates(myLatLng);
-    marker.animation = null;
-    toggleMarker(marker);
+    if(isToggle == true) {
+      marker.animation = null;
+      toggleMarker(marker);
+    }
   }
 }
 
 
+
+function populateInfoWindowContent(businessName, phoneNumber, ratingImg, imgUrl, snippetText, mobileURL) {
+  var contentString = '<div id="content">'+
+      '<a href='+ mobileURL + '><h3>' + businessName + '</h3></a>'+
+      '<div id="bodyContent">'+
+      '<img src=' + imgUrl + '>' +
+      'Phone: ' + phoneNumber + '<br>' +
+      'Rating: <img src=' + ratingImg + ' alt="Rating"> <br><br>' +
+      'Latest Review: <i>' + snippetText + '</i>' +
+      '</div>'+
+      '</div>';
+
+  infowindow.setContent(contentString);
+}
+
+
+
+function reverseGeolocation(marker) {
+  var geocoder = new google.maps.Geocoder;
+  var address;
+  var latlng = marker.position;
+
+  geocoder.geocode({
+    latLng: latlng
+  }, function(responses) {
+    if (responses && responses.length > 0) {
+      address = responses[0].formatted_address;
+      openInfoWindowByAddress(address);
+    }
+  });
+}
+
+
+
+function openInfoWindowByMarker(marker) {
+  reverseGeolocation(marker);
+}
+
+
+
+function openInfoWindowByAddress(address) {
+  infowindow.setContent('');
+  clearMarkers();
+  getYelpInformationByLocation(address);
+  addMarkerToGoogleMap(address, true);
+}

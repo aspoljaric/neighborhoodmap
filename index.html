@@ -28,8 +28,6 @@
       </p>
 
 
-      <button onclick="clearMarkers()">clear</button>
-      <button onclick="getYelpInformationByLocation('80 Cochranes Rd, Moorabbin VIC 3189')">clear</button>
     </nav>
 
     <main class="light_blue">
@@ -41,22 +39,7 @@
       <div id="map"></div>
     </main>
 
-    <script>
-      /*
-       * Open the drawer when the menu ison is clicked.
-       */
-      var menu = document.querySelector('#menu');
-      var main = document.querySelector('main');
-      var drawer = document.querySelector('#drawer');
-
-      menu.addEventListener('click', function(e) {
-        drawer.classList.toggle('open');
-        e.stopPropagation();
-      });
-      main.addEventListener('click', function() {
-        drawer.classList.remove('open');
-      });
-    </script>
+    <script src = "js/ui.js"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAbmfw7OfezCJs7qpCOQQZ7IB46SKTQZ14&callback=initGoogleMap"></script>
     <script src="js/api.js"></script>
     <script src="js/google-api.js"></script>

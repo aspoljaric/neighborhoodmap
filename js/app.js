@@ -30,22 +30,22 @@ var neighbourhood = [
         addressLine4: '',
     },
     {
-        addressLine1: '17-21 Eaton Mall',
+        addressLine1: '25/27 Portman St',
         addressLine2: 'Oakleigh VIC 3166',
         addressLine3: '',
         addressLine4: '',
     },
     {
-        addressLine1: '2/402 Chapel St',
+        addressLine1: '402 Chapel St',
         addressLine2: 'South Yarra VIC 3141',
         addressLine3: '',
         addressLine4: '',
     },
     {
-        addressLine1: 'Crown Towers Melbourne',
-        addressLine2: 'Crown Casino',
-        addressLine3: '8 Whiteman St',
-        addressLine4: 'Southbank VIC 3006',
+        addressLine1: '413 Brunswick St',
+        addressLine2: 'Fitzroy VIC 3065',
+        addressLine3: '',
+        addressLine4: '',
     }
 ];
 
@@ -94,8 +94,7 @@ var ViewModel = function() {
 
     self.setNeighbourhoodLocation = function(clickedNeighbourhoodLocation) {
         self.currentNeighbourhoodLocation(clickedNeighbourhoodLocation);
-        clearMarkers();
-        addMarkerToGoogleMap(clickedNeighbourhoodLocation.fullAddress(), true);
+        openInfoWindowByAddress(clickedNeighbourhoodLocation.fullAddress());
     };
 
 }
