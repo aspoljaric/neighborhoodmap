@@ -109,7 +109,7 @@ var ViewModel = function() {
             return item.addressLine1().toLowerCase().indexOf(self.filter().toLowerCase()) !== -1;
         });
 
-    }, self).extend({ throttle: 500 });
+    }, self).extend({ throttle: 200 });
 
 
     self.setNeighbourhoodLocation = function(clickedNeighbourhoodLocation) {
