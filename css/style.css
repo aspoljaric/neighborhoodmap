@@ -1,5 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto);
 
+
 html, body {
   margin: 0;
   padding: 0;
@@ -7,45 +8,80 @@ html, body {
   width: 100%;
 }
 
+
 body {
   font-family: 'Roboto', sans-serif;
+  font-size: 16px;
 }
+
 
 a#menu svg {
   width: 40px;
 }
+
 
 nav, main {
   padding: 1em;
   box-sizing: border-box;
 }
 
+
 #map {
-  height: 100%;
+  height: 93%;
 }
+
 
 main {
   width: 100%;
   height: 100%;
 }
 
+
 .title {
   font-size: 2.5em;
   text-align: center;
 }
 
+
 .box {
   min-height: 150px;
 }
 
-.dark_blue {
-  background-color: #2A457A;
-  color: #efefef;
+
+.nav-bar {
+  background-color: #4285F4;
 }
 
-.light_blue {
-  background-color: #099DD9;
+
+#map-error {
+  padding: 40% 0 40% 10%;
+  color: red;
 }
+
+
+#filter-input {
+    width: 100%;
+    margin: 8px 0 0 0;
+}
+
+
+#filter-location {
+  list-style-type: none;
+  padding: 15px;
+  border-bottom: 2px solid #2A457A;
+}
+
+
+#filter-all-locations {
+  padding: 0;
+}
+
+
+#infobox-image {
+  float: left;
+  padding: 0 10px 0 0;
+}
+
 
 /*
 * Off-canvas layout styles.
@@ -53,14 +89,15 @@ main {
 
 /* Since we're mobile-first, by default, the drawer is hidden. */
 nav {
-  width: 300px;
+  z-index:1;
+  width: 290px;
   height: 100%;
   position: absolute;
   /* This trasform moves the drawer off canvas. */
-  -webkit-transform: translate(-300px, 0);
-  transform: translate(-300px, 0);
+  -webkit-transform: translate(-290px, 0);
+  transform: translate(-290px, 0);
   /* Optionally, we animate the drawer. */
-  transition: transform 0.3s ease;
+  transition: transform 0.5s ease;
 }
 
 nav.open {
@@ -89,5 +126,6 @@ nav.open {
     width: auto;
     /* Flex-grow streches the main content to fill all available space. */
     flex-grow: 1;
+    overflow: auto;
   }
 }

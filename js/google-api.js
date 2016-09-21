@@ -26,15 +26,6 @@ function centreMap() {
 }
 
 
-function closeInfoWindow(marker) {
-  toggleMarker(marker);
-  marker.setAnimation(null);
-  map.setZoom(11);
-  map.setCenter(mapCenter);
-}
-
-
-
 function clearMarkers() {
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(null);
@@ -42,6 +33,17 @@ function clearMarkers() {
   markers = [];
 }
 
+
+function reverseGeolocation(marker, processesGeolocation) {
+  var geocoder = new google.maps.Geocoder;
+  var latlng = marker.position;
+
+  geocoder.geocode({
+    latLng: latlng
+  }, function(responses) {
+    processesGeolocation(responses);
+  });
+}
 
 
 function createMarkerByGeoCoordinates(latLng) {
@@ -55,7 +57,6 @@ function createMarkerByGeoCoordinates(latLng) {
   markers.push(marker);
   return marker;
 }
-
 
 
 function toggleMarker(marker) {
@@ -75,7 +76,6 @@ function toggleMarker(marker) {
 }
 
 
-
 function addMarkerToGoogleMap(address, isToggle) {
   var url = googleMapsAPIUrl + 'address=' + address + '&key=' + googleMapsAPIKey;
 
@@ -84,10 +84,9 @@ function addMarkerToGoogleMap(address, isToggle) {
         processMarkerData(data, isToggle);
     })
     .fail(function(){
-         setAPIFailMessage("Unable to connect to Google.");
+         setAPIFailMessage("Unable to connect to Google Maps.");
     });
 }
-
 
 
 function processMarkerData(data, isToggle){
@@ -105,34 +104,30 @@ function processMarkerData(data, isToggle){
 }
 
 
-
 function populateInfoWindowContent(businessName, phoneNumber, ratingImg, imgUrl, snippetText, mobileURL) {
-  var contentString = '<div id="content">'+
-      '<a href='+ mobileURL + '><h3>' + businessName + '</h3></a>'+
-      '<div id="bodyContent">'+
+  var contentString = '<div id="infobox-content">'+
+      '<h4>' + businessName + '</h4>'+
+      '<div id="infobox-body-content">'+
+
+      '<div id="infobox-image">' +
       '<img src=' + imgUrl + '>' +
-      'Phone: ' + phoneNumber + '<br>' +
-      'Rating: <img src=' + ratingImg + ' alt="Rating"> <br><br>' +
-      'Latest Review: <i>' + snippetText + '</i>' +
+      '</div>'+
+
+      '<div id="infobox-contact">' +
+      '<b>Phone:</b>' + phoneNumber + '<br>' +
+      '<b>Rating:</b> <img src=' + ratingImg + ' alt="Rating"> <br><br>' +
+      '</div>' +
+
+      '<div id="infobox-review">' +
+      '<b>Latest Review:</b> <i>' + snippetText + '</i>' +
+      '<a href='+ mobileURL + ' target="_blank">More information.</a>' +
+      '</div>' +
+
       '</div>'+
       '</div>';
 
   infowindow.setContent(contentString);
 }
-
-
-
-function reverseGeolocation(marker, processesGeolocation) {
-  var geocoder = new google.maps.Geocoder;
-  var latlng = marker.position;
-
-  geocoder.geocode({
-    latLng: latlng
-  }, function(responses) {
-    processesGeolocation(responses);
-  });
-}
-
 
 
 function openInfoWindowByMarker(marker) {
@@ -147,7 +142,6 @@ function openInfoWindowByMarker(marker) {
      infowindow.open(map, marker);
   });
 }
-
 
 
 function openInfoWindowByAddress(address) {
@@ -169,6 +163,13 @@ function openInfoWindowByAddress(address) {
   infowindow.open(map, marker);
 }
 
+
+function closeInfoWindow(marker) {
+  toggleMarker(marker);
+  marker.setAnimation(null);
+  map.setZoom(11);
+  map.setCenter(mapCenter);
+}
 
 
 function populateInfoWindowFromYelp(address) {
