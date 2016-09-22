@@ -1,6 +1,6 @@
 var googleMapsAPIUrl = 'https://maps.googleapis.com/maps/api/geocode/json?';
 var googleMapsAPIKey = 'AIzaSyAbmfw7OfezCJs7qpCOQQZ7IB46SKTQZ14';
-var map, infowindow, currentMarker;
+var map, infowindow;
 var markers = [];
 var mapCenter = {lat: -37.8203576, lng: 144.9516255}; // Melbourne, Australia
 
@@ -27,7 +27,8 @@ function centreMap() {
 
 
 function clearMarkers() {
-  for (var i = 0; i < markers.length; i++) {
+  var markersCount = markers.length;
+  for (var i = 0; i < markersCount; i++) {
     markers[i].setVisible (false);
   }
 }
@@ -57,21 +58,24 @@ function createMarkerByGeoCoordinates(latLng) {
   });
 
   marker.addListener('click', openInfoWindowByMarker.bind(map, marker), false);
-  markers.push(marker);
 
+  markers.push(marker);
   return marker;
 }
 
 
 function toggleMarker(marker) {
   if(marker !== undefined) {
-    if (marker.getAnimation() !== null) {
-      marker.setAnimation(null);
+    if (marker.setAnimation() != null) { // the !== comparison wont work for null, have to use
+      marker.setAnimation(null);         // the != for this operation
       map.setZoom(11);
       map.setCenter(mapCenter);
     }
     else {
       marker.setAnimation(google.maps.Animation.BOUNCE);
+      setTimeout(function() {
+        marker.setAnimation(null);
+      }, 2000);
       google.maps.event.addListener(infowindow,'closeclick', closeInfoWindow.bind(null, marker), false);
       map.setZoom(15);
       map.setCenter(marker.getPosition());
@@ -139,13 +143,11 @@ function populateInfoWindowContent(businessName, phoneNumber, ratingImg, imgUrl,
 
 function openInfoWindowByMarker(marker) {
   infowindow.setContent('');
-  toggleMarker(currentMarker);
+  toggleMarker(marker);
   var formattedAddress;
   reverseGeolocation(marker,function(address){
      formattedAddress = address[0].formatted_address;
      populateInfoWindowFromYelp(formattedAddress);
-     toggleMarker(marker);
-     currentMarker = marker;
      infowindow.open(map, marker);
   });
 }
@@ -153,7 +155,6 @@ function openInfoWindowByMarker(marker) {
 
 function openInfoWindowByAddress(address) {
   infowindow.setContent('');
-  toggleMarker(currentMarker);
   var marker;
   for(var i = 0; i < markers.length; i++) {
     var lat = markers[i].position.lat();
@@ -166,14 +167,11 @@ function openInfoWindowByAddress(address) {
 
   getYelpInformationByLocation(address.fullAddress());
   toggleMarker(marker);
-  currentMarker = marker;
   infowindow.open(map, marker);
 }
 
 
 function closeInfoWindow(marker) {
-  toggleMarker(marker);
-  marker.setAnimation(null);
   map.setZoom(11);
   map.setCenter(mapCenter);
 }

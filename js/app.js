@@ -90,12 +90,10 @@ var NeighbourhoodLocation = function (data) {
 
 var ViewModel = function() {
     var self = this;
-    self.neigbourhoodList = ko.observableArray([]);
+    self.neigbourhoodList = ko.observableArray();
 
-    neighbourhood.forEach(function(neighbourhoodItem){
-
+    neighbourhood.forEach(function(neighbourhoodItem) {
         var newNeighbourhoodItem = new NeighbourhoodLocation(neighbourhoodItem);
-
         addMarkerToGoogleMap(newNeighbourhoodItem.fullAddress(), false, function(result) {
             newNeighbourhoodItem.marker(processMarkerData(result));
             self.neigbourhoodList.push(newNeighbourhoodItem);
@@ -104,20 +102,14 @@ var ViewModel = function() {
 
     self.filter =  ko.observable('');
 
-    self.filteredNeigbourhoodList = ko.computed(function()
-    {
+    self.filteredNeigbourhoodList = ko.computed(function() {
         clearMarkers();
-
         if(infowindow !== undefined) {
             infowindow.close();
         }
-
-        return ko.utils.arrayFilter(self.neigbourhoodList(), function(item)
-        {
-            if (item.addressLine1().toLowerCase().indexOf(self.filter().toLowerCase()) !== -1)
-            {
-                if(item.marker() !== undefined)
-                {
+        return ko.utils.arrayFilter(self.neigbourhoodList(), function(item) {
+            if (item.addressLine1().toLowerCase().indexOf(self.filter().toLowerCase()) !== -1) {
+                if(item.marker() !== undefined) {
                     var marker = item.marker();
                     marker.setVisible(true);
                 }
@@ -125,7 +117,6 @@ var ViewModel = function() {
             }
             return item.addressLine1().toLowerCase().indexOf(self.filter().toLowerCase()) !== -1;
         });
-
     }, self).extend({ throttle: 200 });
 
     self.isMenuClicked = ko.observable('');
