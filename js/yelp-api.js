@@ -50,13 +50,18 @@ function getYelpInformationByLocation(location) {
     'dataType' : 'jsonp',
     'cache': true
     }).done(function(data, textStatus, jqXHR) {
-      var businessName = data.businesses[0].name;
-      var phoneNumber = data.businesses[0].phone;
-      var ratingImg = data.businesses[0].rating_img_url;
-      var imgUrl = data.businesses[0].image_url;
-      var snippetText = data.businesses[0].snippet_text;
-      var mobileURL = data.businesses[0].mobile_url;
-      setYelpInformation(businessName, phoneNumber, ratingImg, imgUrl, snippetText, mobileURL);
+      if(data !== undefined) {
+        var businessName = "Yelp Search: " + data.businesses[0].name;
+        var phoneNumber = data.businesses[0].phone;
+        var ratingImg = data.businesses[0].rating_img_url;
+        var imgUrl = data.businesses[0].image_url;
+        var snippetText = data.businesses[0].snippet_text;
+        var mobileURL = data.businesses[0].mobile_url;
+        setYelpInformation(businessName, phoneNumber, ratingImg, imgUrl, snippetText, mobileURL);
+    }
+    else {
+      setAPIFailMessage("No Yelp information for this location.");
+    }
     }).fail(function() {
       setAPIFailMessage("Unable to connect to Yelp.");
   });

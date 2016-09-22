@@ -9,6 +9,16 @@ It uses Google Maps to display the map information and Yelp to gather more infor
 
 The design implements a responsive UI to work well on multiple devices.
 
+The Yelp Search API (v2) is used to fetch detailed information. The endpoint used is;
+
+https://api.yelp.com/v2/search?
+
+The "location" attribute is set by the address specified. E.g.
+
+https://api.yelp.com/v2/search?location=80+Cochranes+Rd+Moorabbin+VIC+3189
+
+For more information about the API please visit https://www.yelp.com/developers/documentation/v2/search_api
+
 Installation
 ------------
 Run the index.html file

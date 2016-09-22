@@ -68,42 +68,59 @@ var NeighbourhoodLocation = function (data) {
 
     this.fullAddress = ko.computed(function() {
         var address = '';
-        if(this.addressLine1() != '') {
+        if(this.addressLine1() !== '') {
             address += this.addressLine1();
         }
-        if(this.addressLine2() != '') {
+        if(this.addressLine2() !== '') {
             address += ', ' + this.addressLine2();
         }
-        if(this.addressLine3() != '') {
+        if(this.addressLine3() !== '') {
             address += ', ' + this.addressLine3();
         }
-        if(this.addressLine4() != '') {
+        if(this.addressLine4() !== '') {
             address += ', ' + this.addressLine4();
         }
         return address;
     }, this);
-}
+
+    this.marker = ko.observable(data.marker);
+};
 
 
 
 var ViewModel = function() {
     var self = this;
-
     self.neigbourhoodList = ko.observableArray([]);
+
     neighbourhood.forEach(function(neighbourhoodItem){
-        self.neigbourhoodList.push(new NeighbourhoodLocation(neighbourhoodItem));
+
+        var newNeighbourhoodItem = new NeighbourhoodLocation(neighbourhoodItem);
+
+        addMarkerToGoogleMap(newNeighbourhoodItem.fullAddress(), false, function(result) {
+            newNeighbourhoodItem.marker(processMarkerData(result));
+            self.neigbourhoodList.push(newNeighbourhoodItem);
+        });
     });
 
-    self.filter =  ko.observable("");
+    self.filter =  ko.observable('');
 
     self.filteredNeigbourhoodList = ko.computed(function()
     {
         clearMarkers();
+
+        if(infowindow !== undefined) {
+            infowindow.close();
+        }
+
         return ko.utils.arrayFilter(self.neigbourhoodList(), function(item)
         {
             if (item.addressLine1().toLowerCase().indexOf(self.filter().toLowerCase()) !== -1)
             {
-                addMarkerToGoogleMap(item.fullAddress(), false);
+                if(item.marker() !== undefined)
+                {
+                    var marker = item.marker();
+                    marker.setVisible(true);
+                }
                 centreMap();
             }
             return item.addressLine1().toLowerCase().indexOf(self.filter().toLowerCase()) !== -1;
@@ -111,11 +128,17 @@ var ViewModel = function() {
 
     }, self).extend({ throttle: 200 });
 
+    self.isMenuClicked = ko.observable('');
 
     self.setNeighbourhoodLocation = function(clickedNeighbourhoodLocation) {
         openInfoWindowByAddress(clickedNeighbourhoodLocation);
     };
 
-}
+    self.toggleMenu = function() {
+        self.isMenuClicked(true);
+    };
 
-ko.applyBindings(new ViewModel());
+    self.toggleMain = function() {
+        self.isMenuClicked(false);
+    };
+};

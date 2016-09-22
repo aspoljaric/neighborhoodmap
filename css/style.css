@@ -1,7 +1,8 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto);
 
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -10,17 +11,19 @@ html, body {
 
 
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 16px;
 }
 
 
-a#menu svg {
+a#menu
+svg {
   width: 40px;
 }
 
 
-nav, main {
+nav,
+main {
   padding: 1em;
   box-sizing: border-box;
 }

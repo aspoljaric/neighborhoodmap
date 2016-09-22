@@ -1,10 +1,8 @@
 var googleMapsAPIUrl = 'https://maps.googleapis.com/maps/api/geocode/json?';
 var googleMapsAPIKey = 'AIzaSyAbmfw7OfezCJs7qpCOQQZ7IB46SKTQZ14';
-var map;
+var map, infowindow, currentMarker;
 var markers = [];
 var mapCenter = {lat: -37.8203576, lng: 144.9516255}; // Melbourne, Australia
-var infowindow;
-var currentMarker;
 
 
 function initGoogleMap() {
@@ -15,11 +13,13 @@ function initGoogleMap() {
   zoom: 11,
   center: mapCenter
   });
+
+  ko.applyBindings(new ViewModel());
 }
 
 
 function centreMap() {
-  if(map != undefined) {
+  if(map !== undefined) {
     map.setZoom(11);
     map.setCenter(mapCenter);
   }
@@ -28,21 +28,24 @@ function centreMap() {
 
 function clearMarkers() {
   for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(null);
+    markers[i].setVisible (false);
   }
-  markers = [];
 }
 
 
 function reverseGeolocation(marker, processesGeolocation) {
-  var geocoder = new google.maps.Geocoder;
+  var geocoder = new google.maps.Geocoder();
   var latlng = marker.position;
-
   geocoder.geocode({
     latLng: latlng
-  }, function(responses) {
-    processesGeolocation(responses);
-  });
+    }, function(responses, status) {
+      if (status === 'OK') {
+        processesGeolocation(responses);
+      }
+      else {
+        setAPIFailMessage("Unable to connect to Google Maps.");
+      }
+    });
 }
 
 
@@ -55,12 +58,13 @@ function createMarkerByGeoCoordinates(latLng) {
 
   marker.addListener('click', openInfoWindowByMarker.bind(map, marker), false);
   markers.push(marker);
+
   return marker;
 }
 
 
 function toggleMarker(marker) {
-  if(marker != undefined) {
+  if(marker !== undefined) {
     if (marker.getAnimation() !== null) {
       marker.setAnimation(null);
       map.setZoom(11);
@@ -76,7 +80,7 @@ function toggleMarker(marker) {
 }
 
 
-function addMarkerToGoogleMap(address, isToggle) {
+function addMarkerToGoogleMap(address, isToggle, processMarkerData) {
   var url = googleMapsAPIUrl + 'address=' + address + '&key=' + googleMapsAPIKey;
 
   $.getJSON(url)
@@ -93,14 +97,17 @@ function processMarkerData(data, isToggle){
   var lat = data.results[0].geometry.location.lat;
   var lng = data.results[0].geometry.location.lng;
   myLatLng = {lat: lat, lng: lng};
+  var marker;
 
-  if(myLatLng != undefined) {
-    var marker = createMarkerByGeoCoordinates(myLatLng);
-    if(isToggle == true) {
+  if(myLatLng !== undefined) {
+    marker = createMarkerByGeoCoordinates(myLatLng);
+    if(isToggle === true) {
       marker.animation = null;
       toggleMarker(marker);
     }
+
   }
+  return marker;
 }
 
 
