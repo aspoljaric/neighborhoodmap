@@ -66,8 +66,8 @@ function createMarkerByGeoCoordinates(latLng) {
 
 function toggleMarker(marker) {
   if(marker !== undefined) {
-    if (marker.setAnimation() != null) { // the !== comparison wont work for null, have to use
-      marker.setAnimation(null);         // the != for this operation
+    if (marker.getAnimation() !== null) {
+      marker.setAnimation(null);
       map.setZoom(11);
       map.setCenter(mapCenter);
     }
@@ -75,8 +75,8 @@ function toggleMarker(marker) {
       marker.setAnimation(google.maps.Animation.BOUNCE);
       setTimeout(function() {
         marker.setAnimation(null);
-      }, 2000);
-      google.maps.event.addListener(infowindow,'closeclick', closeInfoWindow.bind(null, marker), false);
+      }, 2800);
+      google.maps.event.addListener(infowindow,'closeclick', closeInfoWindow.bind(null), false);
       map.setZoom(15);
       map.setCenter(marker.getPosition());
     }
@@ -171,7 +171,7 @@ function openInfoWindowByAddress(address) {
 }
 
 
-function closeInfoWindow(marker) {
+function closeInfoWindow() {
   map.setZoom(11);
   map.setCenter(mapCenter);
 }
